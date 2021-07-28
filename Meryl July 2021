@@ -1,0 +1,10 @@
+//In STATA, using courses and terms tables
+
+by pidm subjcrs: gen lasttermtaken = term[_N] //the last term in which they took this courses
+
+gen gpao =(ceil(ucd_term_gpa*ucd_term_hrs_gpa) - grade_pt*units)/(ucd_term_hrs_gpa-units) ///
+	if reg_status_code=="RE" & grading_type_code=="N" & grade_pt<. lasttermtaken==term & (ucd_term_hrs_gpa-units)<.
+replace gpao=round(gpao,0.01)
+//for repeats, the term gpa is the GPAO
+replace gpao=ucd_term_gpa if lasttermtaken>term & lasttermtaken<.
+
